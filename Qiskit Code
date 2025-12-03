@@ -1,0 +1,117 @@
+import numpy as np
+from qiskit import *
+from qiskit.circuit import Gate
+from qiskit.circuit import Parameter, ParameterVector
+from qiskit.circuit import ClassicalRegister
+from qiskit import BasicAer
+from qiskit.execute_function import execute
+from numpy import random
+from qiskit.quantum_info import Statevector
+from numpy.linalg import norm
+from qiskit import QuantumCircuit, Aer, transpile
+from qiskit.visualization import plot_histogram
+from qiskit import IBMQ, transpile
+from qiskit.providers.ibmq.managed import IBMQJobManager
+from qiskit.quantum_info import random_unitary
+
+import pandas as pd
+import numpy as np
+from scipy.optimize import curve_fit
+from scipy import stats
+
+import math
+import statistics
+
+from scipy.linalg import svdvals
+import time
+
+from qiskit.providers.fake_provider import FakeGuadalupeV2
+backend = FakeGuadalupeV2()
+
+import pickle
+
+start = time.time()
+L = 8
+qr = QuantumRegister(L,'q')
+circ = QuantumCircuit(qr)
+
+def left_trans():
+    global vector
+    temp = [0]*len(vector)
+    for i in range(len(vector)-1):
+        temp[i] = vector[i+1]
+    temp[len(vector)-1] = vector[0]
+    vector = temp
+
+def right_trans():
+    global vector
+    temp = [0]*len(vector)
+    for i in range(1,len(vector)):
+        temp[i] = vector[i-1]
+    temp[0] = vector[len(vector)-1]
+    vector = temp
+    return vector
+
+def c_map(circ):
+    circ.reset(qr[vector[0]])
+    circ.barrier()
+    left_trans()
+
+def chu_map(circ):
+    right_trans()
+    rnang = np.random.uniform(0, 2*np.pi, 6)
+    for i in range(2):
+        circ.rz(rnang[3*i],vector[i])
+        circ.rx(rnang[3*i+1],vector[i])
+        circ.rz(rnang[3*i+2],vector[i])
+    if np.random.rand() < 0.5:
+        circ.cx(vector[0], vector[1])
+    else:
+        circ.cx(vector[1], vector[0])
+
+def oparam(label):
+    for i in range(L):
+        res = [(-1)**(int(x)**+1) for x in str(label)]
+    return np.mean(res)
+
+def binaryvec(j):
+    num = format(j,'0{}b'.format(L))
+    res = [int(x) for x in str(num)]
+    return res
+
+def tob10(vec):
+    jam = 0
+    l = len(vec)
+    for i in range(l):
+        jam += vec[l-i-1]*2**(i)
+    return jam
+
+def gen_circuit(L,pc):
+    global vector
+    qr = QuantumRegister(L,'q')
+    circ = QuantumCircuit(qr)
+    vector = [0]*L
+    for i in range(L):
+        vector[i] = L-i-1
+    for i in range(L**2):
+        prob = np.random.rand()
+        if prob < pc:
+            c_map(circ)
+        else:
+            chu_map(circ)
+    circ.measure_all()
+    return circ
+
+def run_job(L,pc,it):
+    data = [0]*it
+    circs = []
+    for i in range(it):
+        circs.append(gen_circuit(L,pc))
+    circs = transpile(circs, backend)
+    job = execute(circs, backend, shots=32000)
+    result = job.result()
+    with open('spins8_prob=1_it=1_product.pickle','wb') as handle:
+        pickle.dump(result, handle, protocol=pickle.HIGHEST_PROTOCOL)
+
+run_job(8,0.2,20)
+end = time.time()
