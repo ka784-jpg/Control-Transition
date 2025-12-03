@@ -1,0 +1,153 @@
+using LinearAlgebra
+using Tensorial
+using Kronecker
+using Dates
+using DelimitedFiles,CSV
+
+function left_trans()
+    global vector
+    temp = [0 for i = 1:length(vector)]
+    for i in 1:(length(vector) - 1)
+        temp[i] = vector[i + 1]
+    end
+    temp[length(vector)] = vector[1]
+    vector = temp
+end
+
+function right_trans()
+    global vector
+    temp = [0 for i=1:length(vector)]
+    for i in 2:length(vector)
+        temp[i] = vector[i - 1]
+    end
+    temp[1] = vector[length(vector)]
+    vector = temp
+end
+
+function periodic_index(q)
+    if q < L+1
+        return(q)
+    else
+        return(1)
+    end
+end
+
+function flip(bitin)
+    if bitin == 0
+        return(1)
+    else
+        return(0)
+    end
+end
+
+function control_map(bit_in)
+    qubit = vector[1]
+    if bit_in[qubit] == 1
+        bit_in[qubit] = 0
+    end
+    bit_in = single_dep(bit_in,qubit)
+    left_trans()
+    return(bit_in)
+end
+
+function chu_map(bit_in)
+    right_trans()
+    qubit = vector[1]
+    bit_in[periodic_index(qubit)] = rand(0:1)
+    bit_in[periodic_index(qubit+1)] = rand(0:1)
+    bit_in = two_dep(bit_in,qubit)
+    return(bit_in)
+end
+
+function single_dep(bit_in,qubit)
+    p = rand()
+    if p < psq/2
+        bit_in[qubit] = flip(bit_in[qubit])
+    end
+    return(bit_in)
+end
+
+function two_dep(bit_in,qubit)
+    p = rand()
+    pairz = [bit_in[periodic_index(qubit)],bit_in[periodic_index(qubit+1)]]
+    pairs = [[0,0],[0,1],[1,0],[1,1]]
+    if p < 3*ptq/4
+        remaining_pairs = filter(pair -> pair != pairz, pairs)
+        temp = rand(remaining_pairs)
+        bit_in[periodic_index(qubit)],bit_in[periodic_index(qubit+1)] = temp[1],temp[2]
+    end
+    return(bit_in)
+end
+
+function control_map(bit_in)
+    qubit = vector[1]
+    if bit_in[qubit] == 1
+        bit_in[qubit] = 0
+    end
+    bit_in = single_dep(bit_in,qubit)
+    left_trans()
+    return(bit_in)
+end
+
+function chu_map(bit_in)
+    right_trans()
+    qubit = vector[1]
+    bit_in[periodic_index(qubit)] = rand(0:1)
+    bit_in[periodic_index(qubit+1)] = rand(0:1)
+    bit_in = two_dep(bit_in,qubit)
+    return(bit_in)
+end
+
+function control_map_loc(bit_in,qubit)
+    if bit_in[qubit] == 1
+        bit_in[qubit] = 0
+    end
+    bit_in = single_dep(bit_in,qubit)
+    return(bit_in)
+end
+
+function chu_map_loc(bit_in,qubit)
+    bit_in[periodic_index(qubit)] = rand(0:1)
+    bit_in[periodic_index(qubit+1)] = rand(0:1)
+    bit_in = two_dep(bit_in,qubit)
+    return(bit_in)
+end
+
+function mean(input_data)
+    return(sum(input_data)/length(input_data))
+end
+
+function runy(el,iterations,pcontrolin,psqin,ptqin,filename)
+    t1 = now()
+    magnetization_store = zeros(Float64,iterations)
+    L = el
+    global L
+    vector = [i for i=1:L]
+    global vector
+    ptq = ptqin
+    global ptq
+    psq = psqin
+    global psq
+    pcontrol = pcontrolin
+    global pcontrol
+    for r=1:iterations
+        bitstring = [rand(0:1) for i=1:L]
+        for i=1:2*L^2
+            p = rand()
+            if p < pcontrol
+                control_map(bitstring)
+            else
+                chu_map(bitstring)
+            end
+        end
+        if r % 20 == 0
+            t2 = now()
+            if parse(Int64,string(t2 - t1)[1:end-13])  > 7.02e+7
+                writedlm(string(filename,"Reyni1flop"),"exit!", ", ")
+                return("exit!")
+            end
+        end
+        magnetization_store[r] = -1*(2*mean(transpose(bitstring))-1)
+    end
+    writedlm(string(filename,"L=",L,"_pcontrol=",pcontrolin,"_psq=",psqin,"_ptq=",ptqin,"_magnetization"),magnetization_store,", ")
+end
