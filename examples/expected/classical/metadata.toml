@@ -1,0 +1,10 @@
+julia_version = "1.12.6"
+steps = "2*L^2"
+seed_rule = "seed+100000*noise_index+1000*L+100*p_index+trajectory"
+ptq_rule = "psq/10"
+seed = 2026
+sizes = [8, 16, 32]
+psq = [0.01, 0.3]
+probabilities = [0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]
+trajectories = 64
+source_sha256 = "534406c2b1c6af81587573bb89e4d50b6f7fd7f4e3539530cd9dc75b96dc7c2e"

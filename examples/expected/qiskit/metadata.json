@@ -1,0 +1,12 @@
+{
+  "qiskit": "2.2.3",
+  "aer": "0.17.2",
+  "numpy": "2.5.4",
+  "steps": "L^2",
+  "initial_state": "all zero",
+  "noise": "none; local ideal Aer",
+  "circuits_per_point": 12,
+  "shots": 512,
+  "seed_base": 2026,
+  "source_sha256": "059c3b0ef3c6918ac5d0a3d68fbee9a86973f15209bb866349af1989a75bf6bf"
+}

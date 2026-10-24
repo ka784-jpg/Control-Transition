@@ -1,0 +1,26 @@
+cff-version: 1.2.0
+message: "Please cite the full paper when using these simulations."
+title: "Control Transition: Adaptive Circuits and Classical Noise"
+type: software
+authors:
+  - family-names: Aziz
+    given-names: Kemal
+repository-code: "https://github.com/ka784-jpg/Control-Transition"
+license: MIT
+preferred-citation:
+  type: article
+  title: "Order from chaos with adaptive circuits on quantum hardware"
+  year: 2025
+  url: "https://arxiv.org/abs/2509.18259"
+  authors:
+    - {family-names: Pokharel, given-names: Bibek}
+    - {family-names: Pan, given-names: Haining}
+    - {family-names: Aziz, given-names: Kemal}
+    - {family-names: Govia, given-names: "Luke C. G."}
+    - {family-names: Ganeshan, given-names: Sriram}
+    - {family-names: Iadecola, given-names: Thomas}
+    - {family-names: Wilson, given-names: "Justin H."}
+    - {family-names: Jones, given-names: "Barbara A."}
+    - {family-names: Deshpande, given-names: Abhinav}
+    - {family-names: Pixley, given-names: "Jedediah H."}
+    - {family-names: Takita, given-names: Maika}

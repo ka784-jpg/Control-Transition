@@ -1,0 +1,10 @@
+{
+  "paper": "https://arxiv.org/abs/2509.18259v1",
+  "files": [
+    {"path": "Classical Noise Code", "sha256": "534406c2b1c6af81587573bb89e4d50b6f7fd7f4e3539530cd9dc75b96dc7c2e"},
+    {"path": "Qiskit Code", "sha256": "76f17ccd855b3aaf98d10e11a958cd4ef254dfc70ac95d1b3dba6afe9705b6a6"},
+    {"path": "docs/figures/fig01.pdf", "source": "Fig1.pdf", "sha256": "70897ecb4ee1d4c47b00457b25222461cd7ec40603373e1415041ebd6146082b"},
+    {"path": "docs/figures/fig02.pdf", "source": "Fig2.pdf", "sha256": "2558e3e5b05d998ac274988645844aed10186a4c4f4ea200b34a52b6c2c48965"},
+    {"path": "docs/figures/fig07.pdf", "source": "OP_classical_simulation3.pdf", "sha256": "15270f7cf963f1a69b5fba6803fe261d2e4ab39e103ce5d9ba4d5be49a91ea58"}
+  ]
+}
